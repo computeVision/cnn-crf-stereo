@@ -278,6 +278,9 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	if(m_verbose)
 		std::cout << "Execute pairwise net" << std::endl;
 
+    save(*d_inputLeft, "/tmp/normalized_input_l.npy");
+    save(*d_inputRight, "/tmp/normalized_input_r.npy");
+
 	// perform forward pass
 	iu::TensorGpu_32f *d_outLeft = d_inputLeft;
 	iu::TensorGpu_32f *d_outRight = d_inputRight;
@@ -305,6 +308,7 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	iu::TensorGpu_32f *d_commonOut;
 	std::vector<iu::TensorGpu_32f *> commonInputs { d_outLeft, d_outRight };
 	d_commonOut = m_lrOps[0]->forward(commonInputs, m_cudnnHandle);
+    save(*d_commonOut, "/tmp/common_out.npy");
 
 	if (m_verbose)
 	{
@@ -313,13 +317,12 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	}
 
 	d_commonOut = m_lrOps[1]->forward(d_commonOut, m_cudnnHandle);
-
 	if (m_verbose)
 	{
 		std::cout << "Elapsed time (softmax): " << cut.elapsed() << std::endl;
 		//	std::cout << "Elapsed time (correlation + softmax): " << cut.elapsed() << std::endl;
 	}
-
+    save(*d_commonOut, "/tmp/common_out_softmax.npy");
 	// convert to minimization
 	cuda::negateTensor(*d_commonOut);
 

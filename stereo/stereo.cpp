@@ -69,6 +69,8 @@ void Stereo::initialize(const iu::Size<2> size, float disp_min, float disp_step,
     width_ = size[0];
     height_ = size[1];
 
+    std::cout << "disparities: " <<  disp_min << ", " << disp_max << std::endl;
+
     // break points
     depth_ = (disp_max-disp_min)/disp_step +1 ; // Number of break points
     depth_ = std::min(256,1<<(log2i(depth_-1) +1));

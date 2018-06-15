@@ -63,9 +63,9 @@ iu::TensorGpu_32f *ColorStereoNet::predict(iu::ImageGpu_32f_C4 *d_left, iu::Imag
         cuda::makeRgbZeroMean(d_inputRight);
         cuda::makeRgbUnitStd(d_inputRight, true);
 
-        std::cout << "save normalized input!" << std::endl;
-        save(d_inputLeft, "/tmp/normalized_input_l.npy");
-        save(d_inputRight, "/tmp/normalized_input_r.npy");
+//        std::cout << "save normalized input!" << std::endl;
+//        save(d_inputLeft, "/tmp/normalized_input_l.npy");
+//        save(d_inputRight, "/tmp/normalized_input_r.npy");
 
 
         if (m_verbose)
