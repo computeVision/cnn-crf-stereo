@@ -65,14 +65,8 @@ StereoNet::~StereoNet()
 void StereoNet::initNet(float min_disp, float max_disp, float step, int rect_corr,
 						iu::TensorGpu_32f *d_unaryOut, iu::TensorGpu_32f *d_pairwiseOut)
 {
-	std::cout << " Heeeeeeeeeeelllllllloooooooo ! " << std::endl;
-
 	// left path
 	m_leftOps.push_back(new Convolution(CUDNN_CONVOLUTION, m_in, m_ic, m_ih, m_iw, 100, m_ic, 3, 3));
-
-//    save(*d_outPw, "/tmp/dout.npy");
-    save(*m_leftOps.at(0)->getParams(), "/tmp/left_conv.npy");
-
 	m_leftOps.push_back(new Bias(m_leftOps.back()->outTensorDesc(), 1, 100, 1, 1));
 	m_leftOps.push_back(new Activation(m_leftOps.back()->outTensorDesc(), CUDNN_ACTIVATION_TANH));
 
@@ -291,11 +285,15 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	for (int op_idx = 0; op_idx < m_leftOps.size(); ++op_idx)
 	{
 		d_outLeft = m_leftOps[op_idx]->forward(d_outLeft, m_cudnnHandle);
+        std::string tmp = "/tmp/left_" + std::to_string(op_idx) + ".npy";
+        save(*d_outLeft, tmp);
 	}
 
 	for (int op_idx = 0; op_idx < m_leftOps.size(); ++op_idx)
 	{
 		d_outRight = m_rightOps[op_idx]->forward(d_outRight, m_cudnnHandle);
+        std::string tmp = "/tmp/right_" + std::to_string(op_idx) + ".npy";
+        save(*d_outRight, tmp);
 	}
 
 	if (m_verbose)
