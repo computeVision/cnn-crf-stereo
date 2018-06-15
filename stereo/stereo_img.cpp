@@ -28,6 +28,8 @@
 #include "stereo.h"
 #include "tools.h"
 
+#include <iostream>
+
 //#include "opencv2/imgproc/imgproc.hpp"
 
 using std::string;
@@ -43,6 +45,7 @@ constexpr unsigned int str2int(const char* str, int h = 0)
 
 int main(int argc, char *argv[])
 {
+    std::cout << "start main" << std::endl;
     // parameter parsing using boost program_options
     po::options_description general("General options");
     general.add_options()
@@ -139,26 +142,32 @@ int main(int argc, char *argv[])
 	iu::ImageCpu_32f_C4 *I1 = iu::imread_32f_C4(fname_I1);
 	iu::ImageCpu_32f_C4 *I2 = iu::imread_32f_C4(fname_I2);
 	stereo.initialize(I1->size(), min_disp, disp_step, max_disp);
-    stereo.setVerbose(false);
+    stereo.setVerbose(true);
+
+    std::cout << " Net initialized! " << std::endl;
 
     switch(str2int(vm["matching"].as<std::string>().c_str()))
     {
         case str2int("COLORCNN"):
+            std::cout << "COLORCNN" << std::endl;
             stereo.setNumLayers(num_layers);
             stereo.setParameterFile(fname_params);
             stereo.setMatchingFunction(COLORCNN);
             break;
         case str2int("COLORPAIR"):
+            std::cout << "COLORPAIR" << std::endl;
 			alpha = 0.f; // to ignore the edge term
 			stereo.setNumLayers(num_layers);
 			stereo.setParameterFile(fname_params);
 			stereo.setMatchingFunction(COLORCNN_PAIRWISE);
 			break;
         case str2int("CENSUS"):
+            std::cout << "CENSUS" << std::endl;
             stereo.setMatchingFunction(CENSUS);
             stereo.setFilterSize(filter_size);
             break;
         case str2int("LOAD"):
+            std::cout << "LOAD" << std::endl;
             stereo.setMatchingFunction(LOAD);
             stereo.loadVolumeFromFile(vm["volume"].as<string>());
             break;

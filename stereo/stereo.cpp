@@ -25,6 +25,8 @@
 
 #include "colorstereonet.h"
 
+#include <iostream>
+
 Stereo::Stereo():img1(0),img2(0),costvolume_(0),wx(0),wy(0),out(0),
 p(0),matching_function_(CENSUS),solver(0), num_cnn_layers_(3),stereoNet(NULL),verbose_(false)
 {
@@ -111,7 +113,6 @@ void Stereo::setImages(const iu::ImageCpu_32f_C1 &img1, const iu::ImageCpu_32f_C
 
     iu::copy(&img1, this->img1);
     iu::copy(&img2, this->img2);
-
 }
 
 void Stereo::setColorImages(const iu::ImageCpu_32f_C4 &img1, const iu::ImageCpu_32f_C4 &img2)
@@ -134,7 +135,7 @@ void Stereo::computeSlackPropagation(float C1, float C2, float delta, int iterat
     else
     {
     	iu::math::mulC(*wx, lambda_reg, *wx);
-		  iu::math::mulC(*wy, lambda_reg, *wy);
+    	iu::math::mulC(*wy, lambda_reg, *wy);
     }
 
     if(!solver) {
@@ -191,7 +192,6 @@ void Stereo::computeVolume(bool lr)
         {
             // params_name = cnn_parameter_file_base_name_ + std::to_string(num_cnn_layers_) + ".npz";
             params_name = cnn_parameter_file_base_name_ + ".npz";
-            
         }
 
 		// init stereo net (LAZY!)
@@ -240,10 +240,12 @@ void Stereo::computeVolume(bool lr)
 				stereoNet = new ColorStereoNet(num_cnn_layers_, 1, ic, I1_padded_color->height(), I1_padded_color->width());
 				if(matching_function_ == COLORCNN)
 				{
+				    std::cout << "init matching functions" << std::endl;
 					stereoNet->initNet(disp_min_, disp_max_, disp_step_,rect_corr, d_stereoNetMatchingOutput);
 				}
 				else
 				{
+                    std::cout << "init disp_min_ functions" << std::endl;
 					stereoNet->initNet(disp_min_, disp_max_, disp_step_,rect_corr, d_stereoNetMatchingOutput, d_pairwiseOut);
 				}
                 stereoNet->setVerbose(verbose_);
