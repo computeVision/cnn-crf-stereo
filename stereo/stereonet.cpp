@@ -278,8 +278,8 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	if(m_verbose)
 		std::cout << "Execute pairwise net" << std::endl;
 
-    save(*d_inputLeft, "/tmp/normalized_input_l.npy");
-    save(*d_inputRight, "/tmp/normalized_input_r.npy");
+    save(*d_inputLeft, "networkdata/normalized_input_l.npy");
+    save(*d_inputRight, "networkdata/normalized_input_r.npy");
 
 	// perform forward pass
 	iu::TensorGpu_32f *d_outLeft = d_inputLeft;
@@ -288,14 +288,14 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	for (int op_idx = 0; op_idx < m_leftOps.size(); ++op_idx)
 	{
 		d_outLeft = m_leftOps[op_idx]->forward(d_outLeft, m_cudnnHandle);
-        std::string tmp = "/tmp/left_" + std::to_string(op_idx) + ".npy";
+        std::string tmp = "networkdata/left_" + std::to_string(op_idx) + ".npy";
         save(*d_outLeft, tmp);
 	}
 
 	for (int op_idx = 0; op_idx < m_leftOps.size(); ++op_idx)
 	{
 		d_outRight = m_rightOps[op_idx]->forward(d_outRight, m_cudnnHandle);
-        std::string tmp = "/tmp/right_" + std::to_string(op_idx) + ".npy";
+        std::string tmp = "networkdata/right_" + std::to_string(op_idx) + ".npy";
         save(*d_outRight, tmp);
 	}
 
@@ -308,7 +308,7 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 	iu::TensorGpu_32f *d_commonOut;
 	std::vector<iu::TensorGpu_32f *> commonInputs { d_outLeft, d_outRight };
 	d_commonOut = m_lrOps[0]->forward(commonInputs, m_cudnnHandle);
-    save(*d_commonOut, "/tmp/common_out.npy");
+    save(*d_commonOut, "networkdata/common_out.npy");
 
 	if (m_verbose)
 	{
@@ -322,7 +322,7 @@ iu::TensorGpu_32f *StereoNet::performPrediction(iu::TensorGpu_32f *d_inputLeft, 
 		std::cout << "Elapsed time (softmax): " << cut.elapsed() << std::endl;
 		//	std::cout << "Elapsed time (correlation + softmax): " << cut.elapsed() << std::endl;
 	}
-    save(*d_commonOut, "/tmp/common_out_softmax.npy");
+    save(*d_commonOut, "networkdata/common_out_softmax.npy");
 	// convert to minimization
 	cuda::negateTensor(*d_commonOut);
 

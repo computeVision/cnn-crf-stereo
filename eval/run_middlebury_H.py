@@ -18,6 +18,14 @@ config_file = sys.argv[3]
 cnn_params_folder = sys.argv[4]
 output_filename = sys.argv[5]
 
+
+print "data_dir", data_dir 
+print "executable_dir", executable_dir
+print "config_file", config_file
+print "cnn_params_folder", cnn_params_folder
+print "output_filename", output_filename
+
+
 executable = executable_dir + '/stereo_img'
 config_file = cnn_params_folder + '/' + config_file
 
